@@ -1,0 +1,227 @@
+[
+  {
+    "code": "com.google.firebase.auth.AuthCredential credential = com.google.firebase.auth.GoogleAuthProvider.getCredential(_token, null);\nFirebaseAuth.getInstance().signInWithCredential(credential).addOnCompleteListener(this, new com.google.android.gms.tasks.OnCompleteListener<com.google.firebase.auth.AuthResult>() {\n    @Override\n    public void onComplete(@NonNull com.google.android.gms.tasks.Task<com.google.firebase.auth.AuthResult> task) {\n        if (task.isSuccessful()) {\n            SketchwareUtil.CustomToast(getApplicationContext(), \"Google Login Successful!\", \"#FFFFFF\", 12, \"#4CAF50\", 60, SketchwareUtil.CENTER);\n        } else {\n            SketchwareUtil.CustomToast(getApplicationContext(), task.getException().getMessage(), \"#FFFFFF\", 12, \"#E53935\", 60, SketchwareUtil.CENTER);\n        }\n    }\n});",
+    "color": "#FFEA4335",
+    "typeName": "",
+    "name": "Auth: Google Sign-In with ID Token %s.token",
+    "palette": "9",
+    "type": "c",
+    "spec": "Auth: Google Sign-In with ID Token %s.token"
+  },
+  {
+    "code": "FirebaseAuth.getInstance().createUserWithEmailAndPassword(_email, _pass).addOnCompleteListener(this, new com.google.android.gms.tasks.OnCompleteListener<com.google.firebase.auth.AuthResult>() {\n    @Override\n    public void onComplete(@NonNull com.google.android.gms.tasks.Task<com.google.firebase.auth.AuthResult> task) {\n        if (task.isSuccessful()) {\n            SketchwareUtil.CustomToast(getApplicationContext(), \"Registration Successful!\", \"#FFFFFF\", 12, \"#4CAF50\", 60, SketchwareUtil.CENTER);\n        } else {\n            SketchwareUtil.CustomToast(getApplicationContext(), task.getException().getMessage(), \"#FFFFFF\", 12, \"#E53935\", 60, SketchwareUtil.CENTER);\n        }\n    }\n});",
+    "color": "#FF3F51B5",
+    "typeName": "",
+    "name": "Auth: Email Register -> Email %s.email Pass %s.pass",
+    "palette": "9",
+    "type": "c",
+    "spec": "Auth: Email Register -> Email %s.email Pass %s.pass"
+  },
+  {
+    "code": "FirebaseAuth.getInstance().signInWithEmailAndPassword(_email, _pass).addOnCompleteListener(this, new com.google.android.gms.tasks.OnCompleteListener<com.google.firebase.auth.AuthResult>() {\n    @Override\n    public void onComplete(@NonNull com.google.android.gms.tasks.Task<com.google.firebase.auth.AuthResult> task) {\n        if (task.isSuccessful()) {\n            SketchwareUtil.CustomToast(getApplicationContext(), \"Login Successful!\", \"#FFFFFF\", 12, \"#4CAF50\", 60, SketchwareUtil.CENTER);\n        } else {\n            SketchwareUtil.CustomToast(getApplicationContext(), task.getException().getMessage(), \"#FFFFFF\", 12, \"#E53935\", 60, SketchwareUtil.CENTER);\n        }\n    }\n});",
+    "color": "#FF3F51B5",
+    "typeName": "",
+    "name": "Auth: Email Login -> Email %s.email Pass %s.pass",
+    "palette": "9",
+    "type": "c",
+    "spec": "Auth: Email Login -> Email %s.email Pass %s.pass"
+  },
+  {
+    "code": "com.google.firebase.auth.PhoneAuthOptions options = com.google.firebase.auth.PhoneAuthOptions.newBuilder(com.google.firebase.auth.FirebaseAuth.getInstance())\n    .setPhoneNumber(_phone)\n    .setTimeout(60L, java.util.concurrent.TimeUnit.SECONDS)\n    .setActivity(this)\n    .setCallbacks(new com.google.firebase.auth.PhoneAuthProvider.OnVerificationStateChangedCallbacks() {\n        @Override\n        public void onVerificationCompleted(@NonNull com.google.firebase.auth.PhoneAuthCredential credential) {\n            com.google.firebase.auth.FirebaseAuth.getInstance().signInWithCredential(credential);\n        }\n        @Override\n        public void onVerificationFailed(@NonNull com.google.firebase.FirebaseException e) {\n            SketchwareUtil.CustomToast(getApplicationContext(), e.getMessage(), \"#FFFFFF\", 12, \"#E53935\", 60, SketchwareUtil.CENTER);\n        }\n        @Override\n        public void onCodeSent(@NonNull String verificationId, @NonNull com.google.firebase.auth.PhoneAuthProvider.ForceResendingToken token) {\n            _phoneAuthVerificationID = verificationId;\n            SketchwareUtil.CustomToast(getApplicationContext(), \"OTP Code Sent!\", \"#FFFFFF\", 12, \"#4CAF50\", 60, SketchwareUtil.CENTER);\n        }\n    }).build();\ncom.google.firebase.auth.PhoneAuthProvider.verifyPhoneNumber(options);",
+    "color": "#FF4CAF50",
+    "typeName": "",
+    "name": "Auth: Phone Send OTP -> Number %s.phone",
+    "palette": "9",
+    "type": "c",
+    "spec": "Auth: Phone Send OTP -> Number %s.phone"
+  },
+  {
+    "code": "final String currentDeviceID = android.provider.Settings.Secure.getString(getContentResolver(), android.provider.Settings.Secure.ANDROID_ID);\n_db.child(_uid).child(\"deviceID\").addListenerForSingleValueEvent(new com.google.firebase.database.ValueEventListener() {\n    @Override\n    public void onDataChange(@NonNull com.google.firebase.database.DataSnapshot snapshot) {\n        if (snapshot.exists()) {\n            String savedDeviceID = snapshot.getValue(String.class);\n            if (!currentDeviceID.equals(savedDeviceID)) {\n                SketchwareUtil.CustomToast(getApplicationContext(), \"Logged in on another device!\", \"#FFFFFF\", 12, \"#E53935\", 60, SketchwareUtil.CENTER);\n                com.google.firebase.auth.FirebaseAuth.getInstance().signOut();\n                finishAffinity();\n            }\n        } else {\n            _db.child(_uid).child(\"deviceID\").setValue(currentDeviceID);\n        }\n    }\n    @Override\n    public void onCancelled(@NonNull com.google.firebase.database.DatabaseError error) {}\n});",
+    "color": "#FFE91E63",
+    "typeName": "",
+    "name": "Security: Check One Device Login -> Firebase DB %m.db User ID %s.uid",
+    "palette": "9",
+    "type": "c",
+    "spec": "Security: Check One Device Login -> Firebase DB %m.db User ID %s.uid"
+  },
+  {
+    "code": "try {\n    java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat(\"yyyy-MM-dd\", java.util.Locale.US);\n    java.util.Date expireDate = sdf.parse(_expDate);\n    java.util.Date currentDate = new java.util.Date();\n    if (currentDate.after(expireDate)) {\n        androidx.appcompat.app.AlertDialog.Builder builder = new androidx.appcompat.app.AlertDialog.Builder(this);\n        builder.setTitle(\"Account Expired\");\n        builder.setMessage(\"Your subscription has expired. Please renew your plan.\");\n        builder.setCancelable(false);\n        builder.setPositiveButton(\"OK\", new android.content.DialogInterface.OnClickListener() {\n            @Override\n            public void onClick(android.content.DialogInterface dialog, int which) {\n                finishAffinity();\n            }\n        });\n        builder.show();\n    }\n} catch (Exception e) {\n    e.printStackTrace();\n}",
+    "color": "#FF9C27B0",
+    "typeName": "",
+    "name": "Security: Check Expired Date -> Expiry Date (yyyy-MM-dd) %s.expDate",
+    "palette": "9",
+    "type": "c",
+    "spec": "Security: Check Expired Date -> Expiry Date (yyyy-MM-dd) %s.expDate"
+  },
+  {
+    "code": "_db.child(\"keys\").child(_inputKey).addListenerForSingleValueEvent(new com.google.firebase.database.ValueEventListener() {\n    @Override\n    public void onDataChange(@NonNull com.google.firebase.database.DataSnapshot snapshot) {\n        if (snapshot.exists()) {\n            String status = snapshot.child(\"status\").getValue(String.class);\n            if (\"active\".equals(status)) {\n                SketchwareUtil.CustomToast(getApplicationContext(), \"Key Verified Successfully!\", \"#FFFFFF\", 12, \"#4CAF50\", 60, SketchwareUtil.CENTER);\n            } else {\n                SketchwareUtil.CustomToast(getApplicationContext(), \"This key has already been used or expired!\", \"#FFFFFF\", 12, \"#E53935\", 60, SketchwareUtil.CENTER);\n            }\n        } else {\n            SketchwareUtil.CustomToast(getApplicationContext(), \"Invalid Key!\", \"#FFFFFF\", 12, \"#E53935\", 60, SketchwareUtil.CENTER);\n        }\n    }\n    @Override\n    public void onCancelled(@NonNull com.google.firebase.database.DatabaseError error) {}\n});",
+    "color": "#FFFF9800",
+    "typeName": "",
+    "name": "Security: Login with Expire Key %s.inputKey -> Firebase DB %m.db",
+    "palette": "9",
+    "type": "c",
+    "spec": "Security: Login with Expire Key %s.inputKey -> Firebase DB %m.db"
+  },
+  {
+    "code": "final android.app.ProgressDialog progressDialog = new android.app.ProgressDialog(this);\nprogressDialog.setTitle(\"Uploading...\");\nprogressDialog.setMessage(\"Please wait, uploading file...\");\nprogressDialog.setProgressStyle(android.app.ProgressDialog.STYLE_HORIZONTAL);\nprogressDialog.setCancelable(false);\nprogressDialog.show();\n\ncom.google.firebase.storage.StorageReference ref = _storage.getReference().child(_fileName);\nref.putFile(android.net.Uri.fromFile(new java.io.File(_filePath)))\n    .addOnSuccessListener(new com.google.android.gms.tasks.OnSuccessListener<com.google.firebase.storage.UploadTask.TaskSnapshot>() {\n        @Override\n        public void onSuccess(com.google.firebase.storage.UploadTask.TaskSnapshot taskSnapshot) {\n            progressDialog.dismiss();\n            taskSnapshot.getStorage().getDownloadUrl().addOnSuccessListener(new com.google.android.gms.tasks.OnSuccessListener<android.net.Uri>() {\n                @Override\n                public void onSuccess(android.net.Uri uri) {\n                    String downloadUrl = uri.toString();\n                    SketchwareUtil.CustomToast(getApplicationContext(), \"Upload Success!\", \"#FFFFFF\", 12, \"#4CAF50\", 60, SketchwareUtil.CENTER);\n                }\n            });\n        }\n    })\n    .addOnFailureListener(new com.google.android.gms.tasks.OnFailureListener() {\n        @Override\n        public void onFailure(@NonNull Exception e) {\n            progressDialog.dismiss();\n            SketchwareUtil.CustomToast(getApplicationContext(), e.getMessage(), \"#FFFFFF\", 12, \"#E53935\", 60, SketchwareUtil.CENTER);\n        }\n    })\n    .addOnProgressListener(new com.google.firebase.storage.OnProgressListener<com.google.firebase.storage.UploadTask.TaskSnapshot>() {\n        @Override\n        public void onProgress(@NonNull com.google.firebase.storage.UploadTask.TaskSnapshot taskSnapshot) {\n            double progress = (100.0 * taskSnapshot.getBytesTransferred()) / taskSnapshot.getTotalByteCount();\n            progressDialog.setProgress((int) progress);\n        }\n    });",
+    "color": "#FF9C27B0",
+    "typeName": "",
+    "name": "FirebaseStorage: Upload File Corrected",
+    "palette": "9",
+    "type": "c",
+    "spec": "FirebaseStorage: Upload File Corrected"
+  },
+  {
+    "code": "final android.app.ProgressDialog loadingDlg = new android.app.ProgressDialog(this);\nloadingDlg.setMessage(_msg);\nloadingDlg.setCancelable(false);\nandroid.graphics.drawable.GradientDrawable gd = new android.graphics.drawable.GradientDrawable();\ngd.setColor(android.graphics.Color.WHITE);\ngd.setCornerRadius(25f);\nloadingDlg.getWindow().setBackgroundDrawable(gd);\nloadingDlg.show();\nmyLoadingDialog = loadingDlg;",
+    "color": "#FF009688",
+    "typeName": "",
+    "name": "UI: Show Beautiful Loading Dialog -> Message %s.msg",
+    "palette": "11",
+    "type": "c",
+    "spec": "UI: Show Beautiful Loading Dialog -> Message %s.msg"
+  },
+  {
+    "code": "if (myLoadingDialog != null && myLoadingDialog.isShowing()) {\n    myLoadingDialog.dismiss();\n}",
+    "color": "#FF009688",
+    "typeName": "",
+    "name": "UI: Dismiss Loading Dialog",
+    "palette": "11",
+    "type": "c",
+    "spec": "UI: Dismiss Loading Dialog"
+  },
+  {
+    "code": "android.content.Intent i = new android.content.Intent(android.content.Intent.ACTION_VIEW);\ni.setData(android.net.Uri.parse(_url));\nstartActivity(i);",
+    "color": "#FF2196F3",
+    "typeName": "",
+    "name": "Utility: Open URL in Browser -> URL %s.url",
+    "palette": "11",
+    "type": "c",
+    "spec": "Utility: Open URL in Browser -> URL %s.url"
+  },
+  {
+    "code": "android.content.ClipboardManager clipboard = (android.content.ClipboardManager) getSystemService(CLIPBOARD_SERVICE);\nandroid.content.ClipData clip = android.content.ClipData.newPlainText(\"copied\", _text);\nclipboard.setPrimaryClip(clip);\nSketchwareUtil.CustomToast(getApplicationContext(), \"Copied to Clipboard!\", \"#FFFFFF\", 12, \"#4CAF50\", 60, SketchwareUtil.CENTER);",
+    "color": "#FF2196F3",
+    "typeName": "",
+    "name": "Utility: Copy Text to Clipboard -> Text %s.text",
+    "palette": "11",
+    "type": "c",
+    "spec": "Utility: Copy Text to Clipboard -> Text %s.text"
+  },
+  {
+    "code": "if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {\n    if (checkSelfPermission(android.Manifest.permission.READ_EXTERNAL_STORAGE) == android.content.pm.PackageManager.PERMISSION_DENIED) {\n        requestPermissions(new String[] {android.Manifest.permission.READ_EXTERNAL_STORAGE}, 1000);\n    }\n}",
+    "color": "#FFF44336",
+    "typeName": "",
+    "name": "Permission: Request Storage Read",
+    "palette": "11",
+    "type": "c",
+    "spec": "Permission: Request Storage Read"
+  },
+  {
+    "code": "java.io.File file = new java.io.File(_filePath);\nif (file.exists()) {\n    file.delete();\n    SketchwareUtil.CustomToast(getApplicationContext(), \"File Deleted!\", \"#FFFFFF\", 12, \"#E53935\", 60, SketchwareUtil.CENTER);\n}",
+    "color": "#FFFF5722",
+    "typeName": "",
+    "name": "File: Delete File -> Path %s.filePath",
+    "palette": "11",
+    "type": "c",
+    "spec": "File: Delete File -> Path %s.filePath"
+  },
+  {
+    "code": "try {\n    android.content.pm.PackageInfo pInfo = getPackageManager().getPackageInfo(getPackageName(), 0);\n    String version = pInfo.versionName;\n    _versionText.setText(version);\n} catch (android.content.pm.PackageManager.NameNotFoundException e) {\n    e.printStackTrace();\n}",
+    "color": "#FF607D8B",
+    "typeName": "",
+    "name": "App: Get Version Name -> TextView %m.view",
+    "palette": "11",
+    "type": "c",
+    "spec": "App: Get Version Name -> TextView %m.view"
+  },
+  {
+    "code": "java.util.Calendar calendar = java.util.Calendar.getInstance();\nString currentDate = java.text.DateFormat.getDateInstance().format(calendar.getTime());\n_textView.setText(currentDate);",
+    "color": "#FF9C27B0",
+    "typeName": "",
+    "name": "Date: Show Current Date -> TextView %m.view",
+    "palette": "11",
+    "type": "c",
+    "spec": "Date: Show Current Date -> TextView %m.view"
+  },
+  {
+    "code": "if (_isConnected) {\n    SketchwareUtil.CustomToast(getApplicationContext(), \"Internet Connected!\", \"#FFFFFF\", 12, \"#4CAF50\", 60, SketchwareUtil.CENTER);\n} else {\n    SketchwareUtil.CustomToast(getApplicationContext(), \"No Internet Connection!\", \"#FFFFFF\", 12, \"#E53935\", 60, SketchwareUtil.CENTER);\n}",
+    "color": "#FF2196F3",
+    "typeName": "",
+    "name": "Network: Check Connection",
+    "palette": "11",
+    "type": "c",
+    "spec": "Network: Check Connection"
+  },
+  {
+    "code": "android.view.View view = this.getCurrentFocus();\nif (view != null) {\n    android.view.inputmethod.InputMethodManager imm = (android.view.inputmethod.InputMethodManager) getSystemService(android.content.Context.INPUT_METHOD_SERVICE);\n    imm.hideSoftInputFromWindow(view.getWindowToken(), 0);\n}",
+    "color": "#FF607D8B",
+    "typeName": "",
+    "name": "UI: Hide Keyboard",
+    "palette": "11",
+    "type": "c",
+    "spec": "UI: Hide Keyboard"
+  },
+  {
+    "code": "final android.content.SharedPreferences sp = getSharedPreferences(\"login_data\", MODE_PRIVATE);\nif (sp.getBoolean(\"isLoggedIn\", false)) {\n    android.content.Intent i = new android.content.Intent(this, HomeActivity.class);\n    startActivity(i);\n    finish();\n}",
+    "color": "#FF4CAF50",
+    "typeName": "",
+    "name": "Auth: Auto Login Check",
+    "palette": "9",
+    "type": "c",
+    "spec": "Auth: Auto Login Check"
+  },
+  {
+    "code": "final android.content.SharedPreferences sp = getSharedPreferences(\"login_data\", MODE_PRIVATE);\nsp.edit().putBoolean(\"isLoggedIn\", true).apply();\nsp.edit().putString(\"user_email\", _email).apply();",
+    "color": "#FF4CAF50",
+    "typeName": "",
+    "name": "Auth: Save Login Session -> Email %s.email",
+    "palette": "9",
+    "type": "c",
+    "spec": "Auth: Save Login Session -> Email %s.email"
+  },
+  {
+    "code": "final android.content.SharedPreferences sp = getSharedPreferences(\"login_data\", MODE_PRIVATE);\nsp.edit().clear().apply();\ncom.google.firebase.auth.FirebaseAuth.getInstance().signOut();\nandroid.content.Intent i = new android.content.Intent(this, LoginActivity.class);\ni.setFlags(android.content.Intent.FLAG_ACTIVITY_NEW_TASK | android.content.Intent.FLAG_ACTIVITY_CLEAR_TASK);\nstartActivity(i);\nfinish();",
+    "color": "#FF4CAF50",
+    "typeName": "",
+    "name": "Auth: Logout and Clear Session",
+    "palette": "9",
+    "type": "c",
+    "spec": "Auth: Logout and Clear Session"
+  },
+  {
+    "code": "android.widget.Toast.makeText(getApplicationContext(), \"App Closed\", android.widget.Toast.LENGTH_SHORT).show();\nfinishAffinity();\nSystem.exit(0);",
+    "color": "#FFFF5722",
+    "typeName": "",
+    "name": "App: Exit Application",
+    "palette": "11",
+    "type": "c",
+    "spec": "App: Exit Application"
+  },
+  {
+    "code": "android.content.Intent i = new android.content.Intent(android.content.Intent.ACTION_SEND);\ni.setType(\"text/plain\");\ni.putExtra(android.content.Intent.EXTRA_TEXT, _shareText);\nstartActivity(android.content.Intent.createChooser(i, \"Share via\"));",
+    "color": "#FF2196F3",
+    "typeName": "",
+    "name": "Utility: Share Text -> Text %s.shareText",
+    "palette": "11",
+    "type": "c",
+    "spec": "Utility: Share Text -> Text %s.shareText"
+  },
+  {
+    "code": "android.media.MediaPlayer mp = android.media.MediaPlayer.create(this, _resID);\nmp.start();\nmp.setOnCompletionListener(new android.media.MediaPlayer.OnCompletionListener() {\n    @Override\n    public void onCompletion(android.media.MediaPlayer mp) {\n        mp.release();\n    }\n});",
+    "color": "#FF9C27B0",
+    "typeName": "",
+    "name": "Media: Play Sound -> Resource ID %n.resID",
+    "palette": "11",
+    "type": "c",
+    "spec": "Media: Play Sound -> Resource ID %n.resID"
+  },
+  {
+    "code": "long startTime = System.currentTimeMillis();\n// ... Your Process ...\nlong endTime = System.currentTimeMillis();\nandroid.util.Log.d(\"Performance\", \"Execution time: \" + (endTime - startTime) + \"ms\");",
+    "color": "#FF607D8B",
+    "typeName": "",
+    "name": "Debug: Measure Execution Time",
+    "palette": "11",
+    "type": "c",
+    "spec": "Debug: Measure Execution Time"
+  }
+]
